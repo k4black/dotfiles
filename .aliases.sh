@@ -14,7 +14,7 @@ else # macOS `ls`
 fi
 
 # ll to color, show all, and human readable
-alias ll='ls -lahF ${colorflag}"
+alias ll="ls -lahF ${colorflag}"
 
 # Always use color output for `ls`
 alias ls="command ls ${colorflag}"
@@ -22,6 +22,6 @@ alias ls="command ls ${colorflag}"
 
 # Always enable colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+alias grep="grep --color=auto"
+alias fgrep="fgrep --color=auto"
+alias egrep="egrep --color=auto"
