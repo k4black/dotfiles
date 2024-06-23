@@ -1,11 +1,13 @@
 # [user]
 # TO BE DEFINED in .gitconfig.local
+[include]
+	path = ~/.gitconfig.local
 
 [init]
 	defaultBranch = main
 
 [core]
-  editor = nano
+	editor = nano
 	autocrlf = input
 
 	# Treat spaces before tabs and all kinds of trailing whitespace as an error.
@@ -49,7 +51,7 @@
 
 [commit]
 	# https://help.github.com/articles/signing-commits-using-gpg/
-	gpgsign = true
+	# gpgsign = true
 
 [branch]
 	# Show most recently changed branches first.
