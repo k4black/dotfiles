@@ -13,8 +13,8 @@ fi
 
 
 ### HELPERS
-source DOTFILES/.aliases.sh
-source DOTFILES/.functions.sh
+source $DOTFILES/.aliases.sh
+source $DOTFILES/.functions.sh
 
 
 ### SETUP CHORE
