@@ -362,8 +362,9 @@ defaults write com.apple.appstore InAppReviewEnabled -int 0
 ###############################################################################
 
 # Restart affected applications if `--no-restart` flag is not present.
+# NOTE: DO NOT kill terminal as we run in it
 if [[ ! ($* == *--no-restart*) ]]; then
-  for app in "cfprefsd" "Dock" "Finder" "Mail" "SystemUIServer" "Terminal"; do
+  for app in "cfprefsd" "Dock" "Finder" "Mail" "SystemUIServer"; do
     killall "${app}" > /dev/null 2>&1
   done
 fi
