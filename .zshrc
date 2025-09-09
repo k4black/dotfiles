@@ -71,7 +71,8 @@ function plugin-compile {
 ##? Clone a plugin, identify its init file, source it, and add it to your fpath. See https://github.com/mattmc3/zsh_unplugged?tab=readme-ov-file
 function plugin-load {
   local repo plugdir initfile initfiles=()
-  : ${ZPLUGINDIR:=${ZDOTDIR:-~/.config/zsh}/plugins}
+  : ${ZPLUGINDIR:=${XDG_CONFIG_HOME:-$HOME/.config}/zsh/plugins}
+  [[ ! -d "$ZPLUGINDIR" ]] && mkdir -p "$ZPLUGINDIR"  # Ensure it exists
   for repo in $@; do
     plugdir=$ZPLUGINDIR/${repo:t}
     initfile=$plugdir/${repo:t}.plugin.zsh
