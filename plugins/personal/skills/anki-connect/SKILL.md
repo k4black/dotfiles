@@ -11,7 +11,7 @@ Two batch-friendly scripts under `./scripts/`:
 
 | Script | Purpose |
 |--------|---------|
-| `find_cards.py` | Look up many words at once — exact match, deck-aware, target-deck classification |
+| `find_cards.py` | Look up many words at once — word-boundary match (default) or `--exact`, deck-aware, target-deck classification |
 | `add_card.py`   | Always batch — JSONL on stdin, supports `clone_from` to copy cards between decks |
 | `anki_connect.py` | Underlying HTTP client. Import for ad-hoc Python (`anki_request("<action>", **params)`). Full API: https://git.sr.ht/~foosoft/anki-connect |
 
@@ -76,7 +76,7 @@ echo '{"clone_from": 1442860633303}
 ### Lesson → cards
 
 1. Extract the words you want carded from your notes / lesson photo.
-2. **Dedupe**: `find_cards.py <words> --with-articles --target-deck "<lesson deck>"`. Three buckets fall out:
+2. **Dedupe**: `find_cards.py <words> --target-deck "<lesson deck>"`. Three buckets fall out:
    - `=` already in target deck → no action
    - `+` exists elsewhere (e.g. `German::Deutsch DB1`) → clone into the lesson deck
    - `✗` missing → create new
