@@ -1,0 +1,20 @@
+{
+  "name": "kchernyshev-dotfiles",
+  "owner": {
+    "name": "Konstantin Chernyshev",
+    "email": "kchernyshev@toloka.ai"
+  },
+  "metadata": {
+    "description": "Personal Claude Code plugins and skills, distributed from kchernyshev's dotfiles repo.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "personal",
+      "source": "./plugins/personal",
+      "description": "Personal collection of custom skills (anki, ...).",
+      "version": "0.1.0",
+      "category": "productivity"
+    }
+  ]
+}

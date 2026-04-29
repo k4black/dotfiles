@@ -141,3 +141,5 @@ zstyle ':completion:*:(ssh|scp|rsync):*' ignored-patterns '_*'
 ### AUTO COMPILE/UPDATE
 autoload -Uz promptinit && promptinit
 autoload -U compinit && compinit -u
+
+. "$HOME/.local/bin/env"
