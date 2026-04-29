@@ -1,42 +1,39 @@
 # dotfiles
 
-Personal dotfiles + a Claude Code plugin marketplace for my custom skills.
+Personal dotfiles + a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) for my custom skills. `SKILL.md` files follow the [open Agent Skills standard](https://agentskills.io/specification), so the skill bodies are portable across Claude Code, Codex, Gemini CLI, etc. — only the marketplace wrapper (`.claude-plugin/`) is Claude-Code-specific.
 
-## Claude Code skills
+## Install in Claude Code
 
-This repo doubles as a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces).
-
-### Install
-
-From inside Claude Code (clone this repo first or point to its GitHub URL):
+From inside Claude Code, add the marketplace and install the `personal` plugin:
 
 ```text
-/plugin marketplace add ~/.dotfiles
+/plugin marketplace add k4black/dotfiles
 /plugin install personal@kchernyshev-dotfiles
 ```
 
-Or directly from GitHub:
+(Substitute `~/.dotfiles` for `k4black/dotfiles` if you cloned locally.)
 
-```text
-/plugin marketplace add kchernyshev/dotfiles
-/plugin install personal@kchernyshev-dotfiles
-```
+Skills are then auto-discovered, namespaced as `personal:<skill-name>` (e.g. `/personal:anki-connect`).
 
-After installing, skills are auto-discovered. They're namespaced as `personal:<skill-name>` (e.g. `/personal:anki`).
-
-### Update
+To pull updates after I push new skills:
 
 ```text
 /plugin marketplace update kchernyshev-dotfiles
 ```
 
-### Use with other agents (Codex, Gemini CLI, Copilot CLI)
+## Install in Codex CLI
 
-`SKILL.md` files follow the [open Agent Skills standard](https://agentskills.io/specification), so the skill bodies are portable. The Claude Code plugin wrapper (`.claude-plugin/`) is CC-specific. To use a skill with another agent, point it at:
+Codex reads skills directly from `~/.codex/skills/<skill-name>/SKILL.md`. Run the included installer to symlink every skill in `plugins/personal/skills/` into that directory:
 
+```bash
+~/.dotfiles/plugins/personal/install-codex.sh
 ```
-~/.dotfiles/plugins/personal/skills/<skill-name>/
-```
+
+Idempotent — re-run it after adding new skills. Override the destination with `CODEX_SKILLS_DIR=...` if needed.
+
+## Use with other agents (Gemini CLI, Copilot CLI, etc.)
+
+Point them at the skill directories directly: `~/.dotfiles/plugins/personal/skills/<skill-name>/`.
 
 ## Layout
 
@@ -48,6 +45,7 @@ After installing, skills are auto-discovered. They're namespaced as `personal:<s
 │   └── personal/                 # one plugin, holds all my custom skills
 │       ├── .claude-plugin/
 │       │   └── plugin.json
+│       ├── install-codex.sh      # symlinks every skill into ~/.codex/skills
 │       └── skills/
 │           └── anki-connect/     # first skill — Anki flashcard creator
 │               ├── SKILL.md
@@ -65,5 +63,6 @@ After installing, skills are auto-discovered. They're namespaced as `personal:<s
 
 1. Create `plugins/personal/skills/<skill-name>/SKILL.md` with YAML frontmatter (`name`, `description`).
 2. Add any helper scripts under `plugins/personal/skills/<skill-name>/scripts/`.
-3. Bump `version` in `plugins/personal/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`.
-4. Run `/plugin marketplace update kchernyshev-dotfiles` in any session that already has the marketplace installed.
+3. Bump `version` in `plugins/personal/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, commit, push.
+4. **Claude Code** (other machines): `/plugin marketplace update kchernyshev-dotfiles`.
+5. **Codex** (any machine after `git pull`): re-run `plugins/personal/install-codex.sh` to symlink the new skill.
