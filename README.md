@@ -47,9 +47,9 @@ Point them at the skill directories directly: `~/.dotfiles/plugins/personal/skil
 │       │   └── plugin.json
 │       ├── install-codex.sh      # symlinks every skill into ~/.codex/skills
 │       └── skills/
-│           └── anki-connect/     # first skill — Anki flashcard creator
-│               ├── SKILL.md
-│               └── scripts/
+│           ├── anki-connect/     # Anki flashcard creator
+│           ├── apple-notes/      # Apple Notes — safe edit/rename/reorganize
+│           └── apple-reminders/  # Apple Reminders — add/view/complete
 └── ...                           # zsh, git, macOS dotfiles
 ```
 
@@ -58,6 +58,8 @@ Point them at the skill directories directly: `~/.dotfiles/plugins/personal/skil
 | Skill | Description |
 |-------|-------------|
 | `anki-connect` | Create and browse Anki flashcards via the [Anki-Connect](https://git.sr.ht/~foosoft/anki-connect) add-on (AnkiWeb code [2055492159](https://ankiweb.net/shared/info/2055492159)). Adapted from [doasfrancisco/anki-skill](https://github.com/doasfrancisco/anki-skill). |
+| `apple-notes` | Read, rename, move, and reorganize Apple Notes safely — encodes the gotchas around link-URL stripping, the styled-`<div>` title, and `move-note` ID changes. Bundles export-to-markdown and import-from-markdown scripts. |
+| `apple-reminders` | Add, view, complete, and organize items in Apple Reminders via AppleScript. Adapted from [densign01/reminders-skill](https://github.com/densign01/reminders-skill). |
 
 ## Adding a new skill
 
