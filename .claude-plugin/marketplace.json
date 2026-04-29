@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Personal Claude Code plugins and skills, distributed from kchernyshev's dotfiles repo.",
-    "version": "0.2.0"
+    "version": "0.2.1"
   },
   "plugins": [
     {
       "name": "personal",
       "source": "./plugins/personal",
-      "description": "Personal collection of custom skills (anki-connect, apple-notes, apple-reminders).",
-      "version": "0.2.0",
+      "description": "Personal collection of custom Claude Code skills",
+      "version": "0.2.1",
       "category": "productivity"
     }
   ]

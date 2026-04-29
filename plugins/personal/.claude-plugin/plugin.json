@@ -1,7 +1,7 @@
 {
   "name": "personal",
-  "version": "0.2.0",
-  "description": "Personal collection of custom Claude Code skills (anki-connect, apple-notes, apple-reminders).",
+  "version": "0.2.1",
+  "description": "Personal collection of custom Claude Code skills",
   "author": {
     "name": "Konstantin Chernyshev",
     "email": "kchernyshev@toloka.ai"
