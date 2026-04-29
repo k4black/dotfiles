@@ -13,12 +13,13 @@ Two batch-friendly scripts under `./scripts/`:
 |--------|---------|
 | `find_cards.py` | Look up many words at once — word-boundary match (default) or `--exact`, deck-aware, target-deck classification |
 | `add_card.py`   | Always batch — JSONL on stdin, supports `clone_from` to copy cards between decks |
+| `update_card.py` | Partial field updates — JSONL `{"id": <nid>, "fields": {...}}`, leaves other fields/tags alone |
 | `anki_connect.py` | Underlying HTTP client. Import for ad-hoc Python (`anki_request("<action>", **params)`). Full API: https://git.sr.ht/~foosoft/anki-connect |
 
 ## find_cards.py
 
 ```bash
-# Word-boundary match in the Слово field (default). `Mittag` finds `der Mittag`,
+# Word-boundary match in the Word field (default). `Mittag` finds `der Mittag`,
 # `am Mittag`, but NOT `Mittagspause`. Unicode-aware (umlauts, Cyrillic).
 python ./scripts/find_cards.py Mittag Sommer Klavier auf neben
 
@@ -26,7 +27,7 @@ python ./scripts/find_cards.py Mittag Sommer Klavier auf neben
 python ./scripts/find_cards.py Mittag Sommer --exact
 
 # Multi-field search (any-match across all listed fields)
-python ./scripts/find_cards.py лето стол -F Перевод -F Слово
+python ./scripts/find_cards.py лето стол -F Translation -F Word
 
 # Lesson dedupe: classify each word as in-target / elsewhere / missing
 python ./scripts/find_cards.py auf neben Mittag Sommer Klavier \
@@ -53,8 +54,8 @@ CLI provides defaults; per-line keys override or extend. Either `fields` or `clo
 
 ```bash
 # Plain new notes
-echo '{"fields":{"Слово":"der Tisch","Перевод":"стол"}}
-{"fields":{"Слово":"die Wohnung","Перевод":"квартира"}}' | \
+echo '{"fields":{"Word":"der Tisch","Translation":"стол"}}
+{"fields":{"Word":"die Wohnung","Translation":"квартира"}}' | \
   python ./scripts/add_card.py -d "German::0. My German Vocab" -m "My German" \
                                -t lesson-2026-04-29
 
@@ -70,6 +71,22 @@ echo '{"clone_from": 1442860633303}
 ```
 
 `--allow-duplicate` is **required** when cloning. Anki's first-field duplicate check is global; the duplicate is intentional (you want the same content in another deck).
+
+## update_card.py
+
+Patch only specific fields on existing notes. Other fields and all tags are preserved.
+
+```bash
+# Bulk-fix translations on a few cards
+cat <<'EOF' | python ./scripts/update_card.py
+{"id": 1442860633303, "fields": {"Translation": "полдень (~12:00)"}}
+{"id": 1442860633583, "fields": {"Translation": "лето"}}
+EOF
+
+# Set Sound on a single note
+echo '{"id": 1777466685362, "fields": {"Sound": "[sound:foo.mp3]"}}' | \
+  python ./scripts/update_card.py
+```
 
 ## Common workflows
 
@@ -89,7 +106,7 @@ echo '{"clone_from": 1442860633303}
 Same script — JSONL with one line:
 
 ```bash
-echo '{"fields":{"Слово":"der Stab","Перевод":"палка"}}' | \
+echo '{"fields":{"Word":"der Stab","Translation":"палка"}}' | \
   python ./scripts/add_card.py -d "German::0. My German Vocab" -m "My German" -t lesson-2026-04-29
 ```
 

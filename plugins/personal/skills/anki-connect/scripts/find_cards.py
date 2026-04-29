@@ -127,8 +127,16 @@ def display_summary(
         return s
     decks = sorted({d for n in matches for d in decks_by_nid.get(n["noteId"], set())})
     n0 = matches[0]
-    slovo = n0["fields"].get("Слово", {}).get("value", "")
-    perevod = n0["fields"].get("Перевод", {}).get("value", "")
+    label_field = next(
+        (f for f in ("Word", "Слово", "Front", "word") if n0["fields"].get(f, {}).get("value")),
+        None,
+    )
+    back_field = next(
+        (f for f in ("Translation", "Перевод", "Back", "translationRus") if n0["fields"].get(f, {}).get("value")),
+        None,
+    )
+    slovo = n0["fields"].get(label_field, {}).get("value", "") if label_field else ""
+    perevod = n0["fields"].get(back_field, {}).get("value", "") if back_field else ""
     if len(perevod) > 50:
         perevod = perevod[:50] + "…"
     suffix = f"  ({len(matches)} notes)" if len(matches) > 1 else ""
@@ -168,7 +176,7 @@ def main() -> None:
         "--field",
         action="append",
         default=[],
-        help="Field name to match (repeatable). Default: Слово.",
+        help="Field name to match (repeatable). Default: Word, Front, word, Слово.",
     )
     p.add_argument(
         "--exact",
@@ -187,7 +195,7 @@ def main() -> None:
 
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
-    fields = args.field or ["Слово"]
+    fields = args.field or ["Word", "Front", "word", "Слово"]
     words = list(args.words)
     if not words and not sys.stdin.isatty():
         for line in sys.stdin:

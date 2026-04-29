@@ -73,7 +73,7 @@ def note_label(fields: dict, fallback: str = "?") -> str:
 
     Accepts both raw-string fields and notesInfo's {"value": ...} shape.
     """
-    for key in ("Слово", "Front"):
+    for key in ("Word", "Слово", "Front", "word"):
         v = fields.get(key)
         if isinstance(v, dict):
             v = v.get("value")
