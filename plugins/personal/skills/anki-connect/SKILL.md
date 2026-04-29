@@ -18,21 +18,22 @@ Two batch-friendly scripts under `./scripts/`:
 ## find_cards.py
 
 ```bash
-# Search the Слово field for any of these words (default field, exact match)
+# Word-boundary match in the Слово field (default). `Mittag` finds `der Mittag`,
+# `am Mittag`, but NOT `Mittagspause`. Unicode-aware (umlauts, Cyrillic).
 python ./scripts/find_cards.py Mittag Sommer Klavier auf neben
 
-# For German nouns: also try der/die/das <word>
-python ./scripts/find_cards.py Mittag Sommer --with-articles
+# Whole-field equality when you need strict matching
+python ./scripts/find_cards.py Mittag Sommer --exact
 
 # Multi-field search (any-match across all listed fields)
 python ./scripts/find_cards.py лето стол -F Перевод -F Слово
 
 # Lesson dedupe: classify each word as in-target / elsewhere / missing
-python ./scripts/find_cards.py auf neben Mittag Sommer Klavier --with-articles \
+python ./scripts/find_cards.py auf neben Mittag Sommer Klavier \
     --target-deck "German::0. My German Vocab"
 
-# Pipe a file in
-cat lesson_words.txt | python ./scripts/find_cards.py --stdin --with-articles
+# Pipe a file in (auto-reads stdin when no positional words)
+cat lesson_words.txt | python ./scripts/find_cards.py
 
 # Full details for a single word
 python ./scripts/find_cards.py Klavier --detail
