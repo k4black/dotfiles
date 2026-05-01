@@ -14,6 +14,7 @@ Two batch-friendly scripts under `./scripts/`:
 | `find_cards.py` | Look up many words at once — word-boundary match (default) or `--exact`, deck-aware, target-deck classification |
 | `add_card.py`   | Always batch — JSONL on stdin, supports `clone_from` to copy cards between decks |
 | `update_card.py` | Partial field updates — JSONL `{"id": <nid>, "fields": {...}}`, leaves other fields/tags alone |
+| `pick_review.py` | Pick N random notes from a deck (default filter `is:due`) for offline review or quick sampling |
 | `anki_connect.py` | Underlying HTTP client. Import for ad-hoc Python (`anki_request("<action>", **params)`). Full API: https://git.sr.ht/~foosoft/anki-connect |
 
 ## find_cards.py
@@ -85,6 +86,24 @@ EOF
 # Set Sound on a single note
 echo '{"id": 1777466685362, "fields": {"Sound": "[sound:foo.mp3]"}}' | \
   python ./scripts/update_card.py
+```
+
+## pick_review.py
+
+Pick N random notes from a deck. Default filter is `is:due` (cards due today). Useful for offline review or grabbing a few cards to talk through.
+
+```bash
+# 10 random notes due for review
+python ./scripts/pick_review.py -d "German::My Vocab" -n 10
+
+# Any review-state card (whether due today or not)
+python ./scripts/pick_review.py -d "German::My Vocab" -n 5 --filter "is:review"
+
+# 20 random notes from the whole deck
+python ./scripts/pick_review.py -d "German::My Vocab" -n 20 --filter ""
+
+# Reproducible sample + show example sentence
+python ./scripts/pick_review.py -d "German::My Vocab" -n 10 --seed 42 --full
 ```
 
 ## Common workflows
