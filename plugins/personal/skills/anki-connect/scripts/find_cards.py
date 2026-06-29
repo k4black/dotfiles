@@ -15,6 +15,9 @@ Usage:
     # Search multiple fields (any of them matches)
     python find_cards.py лето стол -F Перевод -F Слово
 
+    # Also try `<prefix> <word>` variants — handy for languages with articles or particles
+    python find_cards.py Wand Tisch Mittag --prefix der --prefix die --prefix das --exact
+
     # Compare against a target deck — words are marked "= in target" / "+ elsewhere" / "✗ missing"
     python find_cards.py auf neben Mittag --target-deck "German::0. My German Vocab"
 
@@ -44,31 +47,42 @@ from anki_connect import (
 )
 
 
-def make_matcher(word: str, exact: bool) -> Callable[[str], bool]:
+def expand_with_prefixes(word: str, prefixes: list[str]) -> list[str]:
+    """`["X"]` if no prefixes, else `["X", "P1 X", "P2 X", ...]` — each prefix space-joined."""
+    return [word] + [f"{p} {word}" for p in prefixes]
+
+
+def make_matcher(word: str, exact: bool, prefixes: list[str]) -> Callable[[str], bool]:
     """Return a predicate that tests a field value for the given word.
 
-    --exact: case-insensitive whole-field equality (after strip).
-    Default: case-insensitive Unicode word-boundary search (`\\b<word>\\b`).
+    With --prefix, also accepts any `"<prefix> <word>"` variant.
+
+    --exact: case-insensitive whole-field equality.
+    Default: case-insensitive Unicode word-boundary search (`\\b<variant>\\b`).
     """
+    variants = expand_with_prefixes(word, prefixes)
     if exact:
-        wl = word.lower()
-        return lambda v: v.strip().lower() == wl
-    pat = re.compile(rf"\b{re.escape(word)}\b", re.IGNORECASE)
-    return lambda v: bool(pat.search(v))
+        vl = [v.lower() for v in variants]
+        return lambda v: v.strip().lower() in vl
+    pats = [re.compile(rf"\b{re.escape(v)}\b", re.IGNORECASE) for v in variants]
+    return lambda v: any(p.search(v) for p in pats)
 
 
 def build_query(
     words: list[str],
     fields: list[str],
     exact: bool,
+    prefixes: list[str],
     deck: str | None = None,
     tag: str | None = None,
 ) -> str:
-    """OR query over every (word × field). `*word*` (substring) for the wide search,
-    `field:word` (whole-field) when --exact. Final filtering happens in Python."""
+    """OR query over every (variant × field). `*v*` (substring) for the wide search,
+    `field:v` (whole-field) when --exact. Variants = the word itself plus `prefix word`
+    for every --prefix. Final filtering happens in Python."""
+    variants = [v for w in words for v in expand_with_prefixes(w, prefixes)]
     qparts = [
-        f'"{f}:{w}"' if exact else f'"{f}:*{w}*"'
-        for w in words
+        f'"{f}:{v}"' if exact else f'"{f}:*{v}*"'
+        for v in variants
         for f in fields
     ]
     q = "(" + " OR ".join(qparts) + ")"
@@ -84,9 +98,10 @@ def bucket_notes_by_word(
     words: list[str],
     fields: list[str],
     exact: bool,
+    prefixes: list[str],
 ) -> dict[str, list[dict]]:
     """Assign each note to every input word it matches on any of `fields`."""
-    matchers = {w: make_matcher(w, exact) for w in words}
+    matchers = {w: make_matcher(w, exact, prefixes) for w in words}
     result: dict[str, list[dict]] = {w: [] for w in words}
     for n in notes:
         values = [n["fields"].get(f, {}).get("value", "") for f in fields]
@@ -186,6 +201,14 @@ def main() -> None:
     p.add_argument("-d", "--deck", help="Restrict search to one deck.")
     p.add_argument("-t", "--tag", help="Restrict search to one tag.")
     p.add_argument(
+        "-p",
+        "--prefix",
+        action="append",
+        default=[],
+        help="Also match `<prefix> <word>` (space-joined). Repeatable. "
+        "Example: `--prefix der --prefix die --prefix das` for German articles.",
+    )
+    p.add_argument(
         "--target-deck", help="Mark matches in this deck specially (= vs +)."
     )
     p.add_argument(
@@ -212,15 +235,16 @@ def main() -> None:
     print(
         f"Searching {len(words)} word(s) in fields {fields}"
         f" mode={'exact' if args.exact else 'word-boundary'}"
+        f"{' prefixes=' + repr(args.prefix) if args.prefix else ''}"
         f"{' deck=' + repr(args.deck) if args.deck else ''}"
         f"{' tag=' + args.tag if args.tag else ''}\n"
     )
 
-    query = build_query(words, fields, args.exact, args.deck, args.tag)
+    query = build_query(words, fields, args.exact, args.prefix, args.deck, args.tag)
     all_notes = notes_info(anki_request("findNotes", query=query))
     all_decks = decks_for_notes([n["noteId"] for n in all_notes])
 
-    word_to_notes = bucket_notes_by_word(all_notes, words, fields, args.exact)
+    word_to_notes = bucket_notes_by_word(all_notes, words, fields, args.exact, args.prefix)
 
     counts = {"in-target": 0, "elsewhere": 0, "missing": 0}
     for w in words:

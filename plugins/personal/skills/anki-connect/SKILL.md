@@ -11,7 +11,7 @@ Two batch-friendly scripts under `./scripts/`:
 
 | Script | Purpose |
 |--------|---------|
-| `find_cards.py` | Look up many words at once — word-boundary match (default) or `--exact`, deck-aware, target-deck classification |
+| `find_cards.py` | Look up many words at once — word-boundary or `--exact`, deck-aware, target-deck classification, `--prefix` for article/particle variants (e.g. `--prefix der --prefix die --prefix das` for German nouns) |
 | `add_card.py`   | Always batch — JSONL on stdin, supports `clone_from` to copy cards between decks |
 | `update_card.py` | Partial field updates — JSONL `{"id": <nid>, "fields": {...}}`, leaves other fields/tags alone |
 | `pick_review.py` | Pick N random notes from a deck (default filter `is:due`) for offline review or quick sampling |
@@ -39,6 +39,12 @@ cat lesson_words.txt | python ./scripts/find_cards.py
 
 # Full details for a single word
 python ./scripts/find_cards.py Klavier --detail
+
+# Also match `<prefix> <word>` variants — for languages with articles/particles.
+# `--exact --prefix der --prefix die --prefix das` skips phrase noise and only matches
+# `Klavier`, `der Klavier`, `die Klavier`, `das Klavier` (canonical noun entries).
+python ./scripts/find_cards.py Klavier Wand Mittag --exact \
+    --prefix der --prefix die --prefix das
 ```
 
 Summary legend: `=` in `--target-deck`, `+` found elsewhere, `✗` missing.
