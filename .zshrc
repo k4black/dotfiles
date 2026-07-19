@@ -143,3 +143,4 @@ autoload -Uz promptinit && promptinit
 autoload -U compinit && compinit -u
 
 . "$HOME/.local/bin/env"
+export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH"
