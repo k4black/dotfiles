@@ -10,7 +10,7 @@ EXTRA_ARGS="${*:-}"
 
 OUTFILE="/tmp/codex-review-output-${ITERATION}.txt"
 
-echo "=== Codex Review Cycle: iteration ${ITERATION}/5 ==="
+echo "=== Codex Review Cycle: iteration ${ITERATION}/3 ==="
 
 codex review --uncommitted ${EXTRA_ARGS} &> "${OUTFILE}" || true
 

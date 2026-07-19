@@ -1,13 +1,13 @@
 ---
 name: codex-review-cycle
-description: Run OpenAI Codex CLI in review mode iteratively — fix issues, leave TODOs for disagreements, and re-run until clean or max 5 iterations.
+description: Run OpenAI Codex CLI in review mode iteratively — fix issues, leave TODOs for disagreements, and re-run until clean or max 3 iterations.
 allowed-tools:
   - Bash
 ---
 
 # Codex Review Cycle
 
-Run an iterative review-fix cycle (max 5 iterations).
+Run an iterative review-fix cycle (max 3 iterations) using best codex model.
 
 ## Important context
 
@@ -32,7 +32,7 @@ Maintain an internal log across iterations:
 - **Actions taken** — what you fixed, skipped, or commented on
 - **Issue history** — track if an issue was raised, then not raised, then raised again (oscillation)
 
-## For each iteration (1 through 5):
+## For each iteration (1 through 3):
 
 1. Run the helper script with the iteration number and any extra arguments. Use a 15-minute (900s) timeout on the Bash tool invocation:
    ```bash
@@ -77,4 +77,4 @@ Provide a final summary:
 - **Issues fixed** — list of fixes applied with file and brief description
 - **Issues skipped (TODOs)** — list of disagreements left as TODO comments
 - **Oscillating issues** — list of issues where the reviewer contradicted itself, with the different opinions noted
-- **Final status** — whether the cycle exited clean, timed out, got stuck, or hit the 5-iteration limit
+- **Final status** — whether the cycle exited clean, timed out, got stuck, or hit the 3-iteration limit
